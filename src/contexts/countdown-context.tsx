@@ -22,8 +22,10 @@ interface CountdownProviderProps {
 
 export function CountdownProvider({ children }: CountdownProviderProps) {
   const { startNewChallenge } = useChallengesContext()
+  // TODO: Criar campo de seleção para o tempo e buscar pelo estado ou props
+  const defaultTime = 35 * 60 // 35 minutes in seconds
   
-  const [time, setTime] = useState(0.1 * 60) // 25 minutes in seconds
+  const [time, setTime] = useState(defaultTime) 
   const [isActive, setIsActive] = useState(false)
   const [hasFinished, setHasFinished] = useState(false)
   
@@ -37,7 +39,7 @@ export function CountdownProvider({ children }: CountdownProviderProps) {
   const resetCountdown = useCallback(() => {
     clearTimeout(countdownTimeout)
     setIsActive(false)
-    setTime(0.1 * 60)
+    setTime(defaultTime)
     setHasFinished(false)
   }, [])
   
