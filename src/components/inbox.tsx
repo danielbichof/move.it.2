@@ -52,7 +52,7 @@ export default function Inbox() {
           onClick={() => setIsCapturing(open => !open)}
         >
           <PlusIcon className="size-[13px]" />
-          Novo item
+          Nova anotação
         </Button>
       </div>
 
@@ -80,6 +80,7 @@ export default function Inbox() {
                 {entry.text}
               </span>
               <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs text-[var(--ink-muted)]">Mover para</span>
                 {pillars.map(pillar => (
                   <button
                     key={pillar.id}

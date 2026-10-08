@@ -26,6 +26,9 @@ Transformar a pausa entre ciclos em um cuidado rápido com o corpo: ao fim de ca
 | DES-08 | Quando o usuário clica em **Falhei**, o sistema fecha o desafio sem alterar xp, level nem a contagem de desafios completos.                    |
 | DES-09 | Enquanto a resposta é processada, os dois botões ficam desabilitados e exibem "Processando...".                                                |
 | DES-10 | Há no máximo um desafio ativo por vez.                                                                                                         |
+| DES-11 | No **Iniciar ciclo**, se a permissão de notificação ainda não foi decidida, o sistema pede a permissão. Recusar não impede o ciclo.            |
+| DES-12 | Em navegadores sem a API de notificação, o sistema não tenta notificar e o desafio aparece normalmente.                                        |
+| DES-13 | Clicar na notificação traz a aba do Move.it para a frente.                                                                                    |
 
 ### Catálogo
 
@@ -64,7 +67,7 @@ O catálogo tem 12 desafios: 9 do tipo `body` (alongamento) e 3 do tipo `eye` (d
 - **Catálogo**: array `challenges` em [src/lib/challenges-data.ts](../../src/lib/challenges-data.ts), tipado pela interface `Challenge`. O `challenges.json` da raiz não é usado.
 - **Sorteio**: `startNewChallenge` em [src/contexts/challenges-context.tsx](../../src/contexts/challenges-context.tsx) escolhe um índice com `Math.random`, grava `activeChallenge`, toca `/notification.mp3` e cria a `Notification`.
 - **Gatilho**: `startNewChallenge` é chamado pelo `CountdownProvider` quando o tempo zera (ver [01-ciclo-de-foco.md](01-ciclo-de-foco.md), `CIC-07`).
-- **Interface**: [src/components/challenge-box.tsx](../../src/components/challenge-box.tsx) renderiza o estado vazio ou o desafio ativo. Os dois botões executam dentro de `useTransition`, o que gera o estado "Processando...".
+- **Interface**: [src/components/cycle-challenge.tsx](../../src/components/cycle-challenge.tsx) ocupa o lugar do relógio no card do ciclo e mostra o xp, o exercício e os botões **Falhei** e **Completei**, que executam dentro de `useTransition`.
 - **Resposta**: **Completei** chama `completeChallenge` e `resetCountdown`; **Falhei** chama `resetChallenge` e `resetCountdown`. O crédito de xp é descrito em [03-progressao.md](03-progressao.md).
 - **Estado**: `activeChallenge` existe só no cliente e não é persistido.
 
@@ -77,8 +80,6 @@ O catálogo tem 12 desafios: 9 do tipo `body` (alongamento) e 3 do tipo `eye` (d
 
 ## Questões em aberto
 
-1. **Pedido de permissão de notificação**: o app nunca chama `Notification.requestPermission()`, então `DES-04` só vale para quem concedeu a permissão por conta própria. Quando o app deve pedir: ao abrir, ou no primeiro **Iniciar ciclo**?
-2. **Navegadores sem a API de notificação**: `startNewChallenge` lê `Notification.permission` sem checar se a API existe. Onde ela não existe, essa leitura lança erro. O desafio ainda é exibido, mas o erro precisa ser evitado.
-3. **Repetição**: o sorteio pode repetir o mesmo desafio em ciclos seguidos. Deve evitar o último sorteado?
-4. **Equilíbrio do catálogo**: só 3 de 12 desafios são de olhos, então cerca de 75% dos sorteios são de alongamento. É a proporção desejada?
-5. **Desafio perdido no reload**: recarregar a página com um desafio ativo descarta o desafio sem crédito de xp. É aceitável?
+1. **Repetição**: o sorteio pode repetir o mesmo desafio em ciclos seguidos. Deve evitar o último sorteado?
+2. **Equilíbrio do catálogo**: só 3 de 12 desafios são de olhos, então cerca de 75% dos sorteios são de alongamento. É a proporção desejada?
+3. **Desafio perdido no reload**: recarregar a página com um desafio ativo descarta o desafio sem crédito de xp. É aceitável?

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 type CardElevation = 'flat' | 'raised'
 
@@ -6,6 +6,7 @@ interface CardProps {
   children: ReactNode
   elevation?: CardElevation
   className?: string
+  style?: CSSProperties
   as?: 'div' | 'section' | 'article'
 }
 
@@ -19,7 +20,12 @@ export default function Card({
   children,
   elevation = 'flat',
   className = '',
+  style,
   as: Tag = 'div'
 }: CardProps) {
-  return <Tag className={`${elevations[elevation]} ${className}`}>{children}</Tag>
+  return (
+    <Tag className={`${elevations[elevation]} ${className}`} style={style}>
+      {children}
+    </Tag>
+  )
 }

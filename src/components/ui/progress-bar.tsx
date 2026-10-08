@@ -25,11 +25,11 @@ export default function ProgressBar({
       aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={`h-[5px] overflow-hidden rounded-lg ${className}`}
+      className={`h-[5px] overflow-hidden rounded-full ${className}`}
       style={{ background: trackColor }}
     >
       <div
-        className="h-full rounded-lg transition-all duration-300"
+        className="h-full rounded-full transition-all duration-300"
         style={{ width: `${percent}%`, background: fillColor }}
       />
     </div>

@@ -15,7 +15,7 @@ export function LevelUpModal() {
       className="max-w-[400px] text-center"
     >
       <p
-        className="mt-6 flex h-36 items-center justify-center text-[8rem] leading-none font-semibold text-[var(--accent)]"
+        className="mt-6 flex h-36 items-center justify-center font-rajdhani text-[8rem] leading-none font-bold text-[var(--accent)]"
         style={{
           background: 'url("/icons/levelup.svg") no-repeat center',
           backgroundSize: 'contain'

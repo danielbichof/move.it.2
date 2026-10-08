@@ -31,7 +31,14 @@ export default function Profile() {
           onKeyDown={e => e.key === 'Enter' && e.currentTarget.blur()}
         />
         <p className="flex items-center text-xs">
-          <Image src="/icons/level.svg" alt="" width={10} height={12} className="mr-1.5" />
+          <Image
+            src="/icons/level.svg"
+            alt=""
+            width={10}
+            height={12}
+            className="mr-1.5"
+            style={{ width: 10, height: 12 }}
+          />
           Level {level}
         </p>
       </div>

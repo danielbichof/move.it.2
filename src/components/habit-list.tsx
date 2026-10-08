@@ -70,7 +70,7 @@ export default function HabitList() {
 
   return (
     <section className="flex min-w-0 flex-col gap-3">
-      <SectionHeading>Hoje</SectionHeading>
+      <SectionHeading>Hábitos de hoje</SectionHeading>
 
       <Card className="overflow-hidden py-2.5">
         <ul>

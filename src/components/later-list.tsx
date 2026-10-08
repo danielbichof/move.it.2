@@ -6,13 +6,12 @@ import PillarTag from '@/src/components/pillar-tag'
 import Button from '@/src/components/ui/button'
 import Card from '@/src/components/ui/card'
 import IconButton from '@/src/components/ui/icon-button'
-import { ChevronRightIcon, PlusIcon, XIcon } from '@/src/components/ui/icons'
+import { PlusIcon, XIcon } from '@/src/components/ui/icons'
 import SectionHeading from '@/src/components/ui/section-heading'
 import Tag from '@/src/components/ui/tag'
 import TextField from '@/src/components/ui/text-field'
 import { type Item, newId, type Pillar, pillars } from '@/src/lib/system-m'
 import { updateSystemM, useSystemM, useSystemMReady } from '@/src/lib/system-m-store'
-import { useCountdownContext } from '../contexts/countdown-context'
 
 function setFocus(id: string) {
   updateSystemM(state => ({ ...state, focusId: id }))
@@ -83,7 +82,6 @@ function NewItemForm({ onDone }: { onDone: () => void }) {
 // Tudo que não é o foco do momento fica aqui, pronto para virar o próximo ciclo
 export default function LaterList() {
   const { items, focusId } = useSystemM()
-  const { cycleMinutes } = useCountdownContext()
   const ready = useSystemMReady()
   const [isAdding, setIsAdding] = useState(false)
 
@@ -98,55 +96,54 @@ export default function LaterList() {
           {pending.map(item => (
             <li
               key={item.id}
-              className="relative flex items-center gap-3.5 border-b border-[var(--row-line)] px-[22px] py-[18px]"
+              className="group relative flex items-stretch border-b border-[var(--row-line)]"
             >
               <span
                 className="absolute top-0 bottom-0 left-0 z-[1] w-[3px]"
-                style={{ background: `var(--pillar-${item.pillar})` }}
+                style={{ background: `var(--pillar-${item.pillar}-ink)` }}
                 aria-hidden="true"
               />
               <button
                 type="button"
-                className="absolute inset-0 transition-colors hover:bg-[var(--accent-faint)]"
+                className="flex min-w-0 flex-1 items-center gap-3.5 py-4 pr-2 pl-[22px] text-left transition-colors hover:bg-[var(--accent-faint)]"
                 aria-label={`Focar em ${item.title}`}
                 onClick={() => setFocus(item.id)}
-              />
-
-              <span
-                className="pointer-events-none relative flex size-[30px] shrink-0 items-center justify-center rounded-full"
-                style={{
-                  background: `var(--pillar-${item.pillar})`,
-                  color: `var(--pillar-${item.pillar}-ink)`
-                }}
-                aria-hidden="true"
               >
-                <PillarIcon pillar={item.pillar} className="size-[17px]" />
-              </span>
-
-              <span className="pointer-events-none relative flex min-w-0 flex-1 flex-col items-start gap-1.5">
-                <PillarTag pillar={item.pillar} />
-                <span className="w-full truncate text-sm font-extrabold text-[var(--ink)]">
-                  {item.title}
+                <span
+                  className="flex size-[30px] shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    background: `var(--pillar-${item.pillar})`,
+                    color: `var(--pillar-${item.pillar}-ink)`
+                  }}
+                  aria-hidden="true"
+                >
+                  <PillarIcon pillar={item.pillar} className="size-[17px]" />
                 </span>
-                <span className="w-full truncate text-xs text-[var(--ink-muted)]">
-                  {pillars.find(option => option.id === item.pillar)?.description}
+
+                <span className="flex min-w-0 flex-1 flex-col items-start gap-1.5">
+                  <span className="line-clamp-2 text-sm font-extrabold break-words text-[var(--ink)]">
+                    {item.title}
+                  </span>
+                  <PillarTag pillar={item.pillar} />
                 </span>
-              </span>
 
-              <span className="pointer-events-none relative text-[11px] text-[var(--ink-muted)]">
-                ~ {cycleMinutes} min
-              </span>
+                <span
+                  className="shrink-0 text-xs font-extrabold text-[var(--accent)] sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
+                  aria-hidden="true"
+                >
+                  Focar
+                </span>
+              </button>
 
-              <IconButton
-                label={`Remover ${item.title}`}
-                tone="danger"
-                className="relative"
-                onClick={() => removeItem(item.id)}
-              >
-                <XIcon className="size-[18px]" />
-              </IconButton>
-
-              <ChevronRightIcon className="pointer-events-none relative size-[18px] text-[#7b91b8]" />
+              <div className="flex shrink-0 items-center pr-3 pl-1">
+                <IconButton
+                  label={`Remover ${item.title}`}
+                  tone="danger"
+                  onClick={() => removeItem(item.id)}
+                >
+                  <XIcon className="size-[16px]" />
+                </IconButton>
+              </div>
             </li>
           ))}
         </ul>
