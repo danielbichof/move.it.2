@@ -11,7 +11,7 @@ const inter = Inter({
 const rajdhani = Rajdhani({
   variable: '--font-rajdhani',
   subsets: ['latin'],
-  weight: ['400', '500', '600']
+  weight: ['500', '600', '700']
 })
 
 export const metadata: Metadata = {
@@ -30,8 +30,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link rel="shortcut icon" href="favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.png" type="image/png" />
       </head>
       <body className={`${inter.variable} ${rajdhani.variable} antialiased`}>{children}</body>
     </html>

@@ -71,10 +71,16 @@ export function ChallengesProvider({ children, initialProgress }: ChallengesProv
       })
 
       // Show browser notification
-      if (Notification.permission === 'granted') {
-        new Notification('Novo desafio 🎉', {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification('Novo desafio 🎉', {
           body: `Valendo ${challenge.amount} xp`
         })
+
+        // Clicar no aviso traz o usuário de volta para a aba do desafio
+        notification.onclick = () => {
+          window.focus()
+          notification.close()
+        }
       }
     }
   }

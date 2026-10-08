@@ -23,8 +23,10 @@ Dar ao usuário um bloco de tempo delimitado para trabalhar com foco. O fim do b
 | CIC-05 | Durante um ciclo ativo, o sistema exibe o botão **Abandonar ciclo** no lugar de **Iniciar ciclo**.                                     |
 | CIC-06 | Quando o usuário clica em **Abandonar ciclo**, o sistema para a contagem e volta para `35:00`, sem gerar desafio nem alterar o xp.     |
 | CIC-07 | Quando a contagem chega a `00:00`, o sistema encerra o ciclo e dispara o sorteio de um desafio.                                        |
-| CIC-08 | Com o ciclo encerrado, o sistema exibe o botão **Ciclo encerrado**, desabilitado, até o usuário responder ao desafio.                  |
+| CIC-08 | Com o ciclo encerrado, o sistema troca o relógio pelo desafio e orienta a resolvê-lo para liberar o próximo ciclo.                          |
 | CIC-09 | Quando o usuário responde ao desafio (**Falhei** ou **Completei**), o sistema volta ao estado parado em `35:00`.                       |
+| CIC-10 | A contagem se guia pelo horário de término, não por um segundo por timer: aba em segundo plano não alonga o ciclo.                  |
+| CIC-11 | Com a contagem em andamento (ciclo ou pausa), o tempo restante aparece no título da aba, no formato `MM:SS · move.it`.                |
 
 ### Estados
 
@@ -62,10 +64,10 @@ stateDiagram-v2
 ## Design técnico
 
 - **Estado**: `CountdownProvider` em [src/contexts/countdown-context.tsx](../../src/contexts/countdown-context.tsx) guarda `time` (segundos restantes), `isActive` e `hasFinished`. `minutes` e `seconds` são derivados de `time`.
-- **Contagem**: um `useEffect` agenda um `setTimeout` de 1 segundo a cada mudança de `time` enquanto `isActive` for verdadeiro. A duração vem da constante `defaultTime` (`35 * 60`).
+- **Contagem**: com o ciclo (ou a pausa) em andamento, um `setInterval` de 250 ms recalcula `time` a partir de `endAt` (`Date.now()` + segundos restantes ao começar ou retomar). Pausar guarda o que restou em `time`; retomar recalcula `endAt`.
 - **Fim do ciclo**: com `time === 0`, o efeito marca `hasFinished`, desativa o ciclo e chama `startNewChallenge` do `ChallengesProvider`. Por isso o `CountdownProvider` precisa ficar dentro do `ChallengesProvider`.
 - **Interface**: [src/components/countdown.tsx](../../src/components/countdown.tsx) renderiza o mostrador e escolhe o botão conforme `hasFinished` e `isActive`.
-- **Reset**: `resetCountdown` é chamado pelo próprio botão **Abandonar ciclo** e por [src/components/challenge-box.tsx](../../src/components/challenge-box.tsx) ao responder o desafio.
+- **Reset**: `resetCountdown` é chamado pelo botão **Abandonar ciclo**; o desafio é respondido em [src/components/cycle-challenge.tsx](../../src/components/cycle-challenge.tsx).
 
 ## Fora de escopo
 
@@ -77,5 +79,3 @@ stateDiagram-v2
 
 1. **Duração configurável**: os 35 minutos são fixos no código (há um `TODO` para um campo de seleção). O usuário deve poder escolher a duração? Com quais limites?
 2. **Recarregar a página perde o ciclo**: o estado vive só na memória do navegador. O ciclo em andamento deve sobreviver a um reload?
-3. **Precisão em aba inativa**: a contagem decrementa um segundo por `setTimeout`, não compara com o relógio. Navegadores atrasam timers de abas em segundo plano, então um ciclo pode durar mais que 35 minutos reais. Vale calcular o tempo restante a partir do horário de início?
-4. **Tempo no título da aba**: como o usuário trabalha em outra aba, o tempo restante deveria aparecer no título da página?

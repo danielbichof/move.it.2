@@ -61,7 +61,7 @@ export default function Modal({
         tabIndex={-1}
         className={`relative max-h-full w-full overflow-y-auto rounded-[var(--radius-card)] bg-white p-5 shadow-[0_24px_56px_#07163140] outline-none sm:p-7 ${className}`}
       >
-        <h2 id={titleId} className="pr-10 text-[22px] font-extrabold text-[var(--ink)]">
+        <h2 id={titleId} className="pr-10 text-[22px] font-bold text-[var(--ink)]">
           {title}
         </h2>
         {description && (
