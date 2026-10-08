@@ -1,9 +1,19 @@
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode, useOptimistic, useTransition } from 'react'
-import { Challenge, challenges } from '@/src/lib/challenges-data'
-import { completeChallenge as completeChallengeCookie, UserProgress } from '@/src/lib/cookies-actions'
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useOptimistic,
+  useState,
+  useTransition
+} from 'react'
 import { LevelUpModal } from '@/src/components/level-up-modal'
+import { type Challenge, challenges } from '@/src/lib/challenges-data'
+import {
+  completeChallenge as completeChallengeCookie,
+  type UserProgress
+} from '@/src/lib/cookies-actions'
 
 interface ChallengeContextData {
   // Server state
@@ -11,11 +21,11 @@ interface ChallengeContextData {
   currentExperience: number
   experienceToNextLevel: number
   challengesCompleted: number
-  
+
   // Client state
   activeChallenge: Challenge | null
   isLevelUpModalOpen: boolean
-  
+
   // Actions
   startNewChallenge: () => void
   resetChallenge: () => void
@@ -32,7 +42,7 @@ export const ChallengesContext = createContext({} as ChallengeContextData)
 
 export function ChallengesProvider({ children, initialProgress }: ChallengesProviderProps) {
   const [, startTransition] = useTransition()
-  
+
   // Optimistic updates for server state
   const [optimisticProgress, addOptimisticProgress] = useOptimistic(
     initialProgress,
@@ -41,25 +51,25 @@ export function ChallengesProvider({ children, initialProgress }: ChallengesProv
       ...newProgress
     })
   )
-  
+
   // Client-only state
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null)
   const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false)
-  
-  const experienceToNextLevel = Math.pow((optimisticProgress.level + 1) * 4, 2)
-  
+
+  const experienceToNextLevel = ((optimisticProgress.level + 1) * 4) ** 2
+
   function startNewChallenge() {
     const randomChallengeIndex = Math.floor(Math.random() * challenges.length)
     const challenge = challenges[randomChallengeIndex]
-    
+
     setActiveChallenge(challenge)
-    
+
     // Play notification sound
     if (typeof window !== 'undefined') {
       new Audio('/notification.mp3').play().catch(() => {
         // Ignore audio play errors
       })
-      
+
       // Show browser notification
       if (Notification.permission === 'granted') {
         new Notification('Novo desafio 🎉', {
@@ -68,18 +78,18 @@ export function ChallengesProvider({ children, initialProgress }: ChallengesProv
       }
     }
   }
-  
+
   function resetChallenge() {
     setActiveChallenge(null)
   }
-  
+
   function completeChallenge() {
     if (!activeChallenge) return
-    
+
     const { amount } = activeChallenge
     const finalExperience = optimisticProgress.currentExperience + amount
-    const experienceToNext = Math.pow((optimisticProgress.level + 1) * 4, 2)
-    
+    const experienceToNext = ((optimisticProgress.level + 1) * 4) ** 2
+
     // Optimistic update
     if (finalExperience >= experienceToNext) {
       addOptimisticProgress({
@@ -94,19 +104,19 @@ export function ChallengesProvider({ children, initialProgress }: ChallengesProv
         challengesCompleted: optimisticProgress.challengesCompleted + 1
       })
     }
-    
+
     setActiveChallenge(null)
-    
+
     // Server action
     startTransition(async () => {
       await completeChallengeCookie(amount)
     })
   }
-  
+
   function closeLevelUpModal() {
     setIsLevelUpModalOpen(false)
   }
-  
+
   return (
     <ChallengesContext.Provider
       value={{

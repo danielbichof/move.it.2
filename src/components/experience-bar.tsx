@@ -1,25 +1,33 @@
 'use client'
 
+import ProgressBar from '@/src/components/ui/progress-bar'
 import { useChallengesContext } from '../contexts/challenges-context'
 
-
-export default function ExperienceBar(){
-    const { currentExperience, experienceToNextLevel } = useChallengesContext()
-    
-    const percentToLevel = Math.round((currentExperience * 100)) / experienceToNextLevel;
-    
-    
-    return (
-        <header className="flex items-start w-full py-12 mb-8">
-            <span className="text-base">0 xp</span>
-            <div className="flex-1 h-1 rounded mx-6 relative bg-gray-400">
-                <div className="h-1 rounded transition-all duration-300" style={{width: `${percentToLevel}%`, backgroundColor: 'var(--green)'}} />
-                <span className="absolute top-3 text-sm font-medium transform -translate-x-1/2" style={{ left: `${percentToLevel}%`}}>
-                    {currentExperience} xp
-                </span>
-            </div>
-            <span className="text-base">{experienceToNextLevel} xp</span>
-        </header>
-    )
+interface ExperienceBarProps {
+  className?: string
+  trackClassName?: string
 }
 
+export default function ExperienceBar({
+  className = '',
+  trackClassName = 'flex-1'
+}: ExperienceBarProps) {
+  const { currentExperience, experienceToNextLevel } = useChallengesContext()
+
+  return (
+    <div className={`flex items-center gap-5 ${className}`}>
+      <span className="shrink-0 text-xs font-bold text-[var(--header-xp-start)]">
+        {currentExperience} xp
+      </span>
+      <ProgressBar
+        value={currentExperience}
+        max={experienceToNextLevel}
+        label="Experiência"
+        className={trackClassName}
+      />
+      <span className="shrink-0 text-xs text-[var(--header-xp-end)]">
+        {experienceToNextLevel} xp
+      </span>
+    </div>
+  )
+}
