@@ -39,7 +39,7 @@ export default function CycleTimeModal({ onClose }: { onClose: () => void }) {
           activeColor="var(--accent)"
         >
           <SproutIcon className="size-5 text-[var(--accent)]" />
-          <span className="mt-1 text-[54px] leading-none font-extrabold text-[var(--ink)]">
+          <span className="mt-1 text-[54px] leading-none font-bold text-[var(--ink)]">
             {minutes}
           </span>
           <span className="mt-2 text-sm font-bold text-[var(--ink)]">min</span>
@@ -55,7 +55,7 @@ export default function CycleTimeModal({ onClose }: { onClose: () => void }) {
               key={preset}
               type="button"
               aria-pressed={isSelected}
-              className={`flex size-[52px] items-center justify-center rounded-full border text-[15px] font-extrabold transition-colors ${
+              className={`flex size-[52px] items-center justify-center rounded-full border text-[15px] font-bold transition-colors ${
                 isSelected
                   ? 'border-[var(--accent)] bg-[var(--accent)] text-white'
                   : 'border-[var(--row-line)] bg-white text-[var(--ink)] hover:border-[var(--accent-ring)]'
@@ -82,7 +82,7 @@ export default function CycleTimeModal({ onClose }: { onClose: () => void }) {
             <TimerIcon className="size-[17px]" />
           </span>
           <span className="flex min-w-0 flex-1 flex-col gap-1">
-            <span className="text-sm font-extrabold text-[var(--ink)]">Personalizado</span>
+            <span className="text-sm font-bold text-[var(--ink)]">Personalizado</span>
             <span className="text-[11px] font-semibold text-[var(--ink-muted)]">
               De {minCycleMinutes} a {maxCycleMinutes} minutos (em passos de {cycleStepMinutes})
             </span>

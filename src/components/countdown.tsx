@@ -57,8 +57,13 @@ export default function Countdown() {
   const isTicking = status === 'running' || isOnBreak
   const isCycleOpen = status === 'running' || status === 'paused'
   const showChallenge = status === 'finished' && activeChallenge !== null
+  // Desafio resolvido: o relógio já mostra o próximo ciclo em vez de um 00:00 parado
+  const isBetweenCycles = status === 'finished' && !showChallenge
+  // Com o ciclo aberto as listas somem e o card vira o centro da tela
+  const isStage = isCycleOpen || showChallenge
+
   const totalSeconds = isOnBreak ? breakMinutes * 60 : cycleSeconds
-  const remaining = minutes * 60 + seconds
+  const remaining = isBetweenCycles ? cycleSeconds : minutes * 60 + seconds
 
   // O pilar do foco tinge o card inteiro: dá para saber onde está a atenção sem ler
   const ambient = focus && !isOnBreak ? focus.pillar : null
@@ -74,12 +79,24 @@ export default function Countdown() {
       as="section"
       elevation="raised"
       style={ambientStyle}
-      className="grid min-w-0 gap-x-10 gap-y-6 px-5 py-6 transition-colors sm:px-8 sm:py-8 md:min-h-[340px] md:grid-cols-[minmax(0,1fr)_auto] md:grid-rows-[auto_1fr]"
+      className={`min-w-0 px-5 py-6 transition-colors sm:px-8 ${
+        isStage
+          ? 'flex flex-col items-center gap-7 text-center sm:py-12'
+          : 'grid gap-x-12 gap-y-6 sm:py-8 md:grid-cols-[minmax(0,1fr)_auto]'
+      }`}
     >
-      <div className="min-w-0 md:col-start-1 md:row-start-1">
+      <div
+        className={
+          isStage
+            ? 'flex max-w-[640px] flex-col items-center'
+            : 'min-w-0 md:col-start-1 md:row-start-1'
+        }
+      >
         {focus && !isOnBreak && (
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <PillarTag pillar={focus.pillar} size="md" onTint />
+          <div className="mb-3 flex w-full items-center justify-between gap-3">
+            <span className={isStage ? 'mx-auto' : ''}>
+              <PillarTag pillar={focus.pillar} size="md" onTint />
+            </span>
             {isIdle && (
               <IconButton label={`Tirar o foco de ${focus.title}`} onClick={clearFocus}>
                 <EllipsisVerticalIcon className="size-[18px]" />
@@ -88,40 +105,36 @@ export default function Countdown() {
           </div>
         )}
 
-        {isOnBreak ? (
-          <>
-            <h2 className="text-[26px] leading-tight font-extrabold text-[var(--ink)]">
-              Hora da pausa
-            </h2>
-            <p className="mt-2 max-w-[460px] text-[15px] font-medium text-[var(--ink-soft)]">
-              Descanse um pouco. O próximo ciclo começa sozinho quando o tempo acabar.
-            </p>
-          </>
-        ) : (
-          <>
-            <h2 className="text-[26px] leading-tight font-extrabold break-words text-[var(--ink)]">
-              {focus ? focus.title : 'Nenhum foco definido'}
-            </h2>
-            <p className="mt-2 max-w-[460px] text-[15px] font-medium text-[var(--ink-soft)]">
-              {focus
-                ? focusPillar?.description
-                : ready
-                  ? 'Escolha um item em Depois para focar. O ciclo também roda sem foco.'
-                  : ''}
-            </p>
-          </>
-        )}
+        <h2 className="text-[clamp(26px,4.2vw,40px)] leading-[1.1] font-bold tracking-tight break-words text-[var(--ink)]">
+          {isOnBreak ? 'Hora da pausa' : focus ? focus.title : 'Nenhum foco definido'}
+        </h2>
+        <p className="mt-3 max-w-[460px] text-[15px] font-medium text-[var(--ink-soft)]">
+          {isOnBreak
+            ? 'Descanse um pouco. O próximo ciclo começa sozinho quando o tempo acabar.'
+            : focus
+              ? focusPillar?.description
+              : ready
+                ? 'Escolha um item em Depois para focar. O ciclo também roda sem foco.'
+                : ''}
+        </p>
       </div>
 
-      <div className="flex min-w-0 flex-col items-center gap-4 md:col-start-2 md:row-span-2 md:row-start-1 md:w-[376px] md:self-center">
+      <div
+        className={`flex min-w-0 flex-col items-center gap-4 ${
+          isStage
+            ? 'w-full max-w-[520px]'
+            : 'md:col-start-2 md:row-span-2 md:row-start-1 md:w-[376px] md:self-center'
+        }`}
+      >
         {showChallenge ? (
           <CycleChallenge />
         ) : (
           <>
             <FlipClock
-              minutes={minutes}
-              seconds={seconds}
+              minutes={isBetweenCycles ? cycleMinutes : minutes}
+              seconds={isBetweenCycles ? 0 : seconds}
               active={isTicking}
+              large={isStage}
               label={isOnBreak ? 'Tempo restante da pausa' : 'Tempo restante do ciclo'}
             />
 
@@ -132,7 +145,7 @@ export default function Countdown() {
                 label={isOnBreak ? 'Progresso da pausa' : 'Progresso do ciclo'}
                 className="w-full"
                 trackColor="color-mix(in srgb, var(--ink) 12%, transparent)"
-                fillColor={ambient ? `var(--pillar-${ambient}-ink)` : 'var(--accent)'}
+                fillColor={ambient ? `var(--pillar-${ambient}-ink)` : 'var(--ink)'}
               />
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold text-[var(--ink-soft)]">
@@ -156,52 +169,54 @@ export default function Countdown() {
         )}
       </div>
 
-      <div className="min-w-0 md:col-start-1 md:row-start-2 md:self-end">
-        {isIdle && (
-          <Button
-            variant="cta"
-            size="cycle"
-            className="w-full md:w-[220px]"
-            onClick={startCountdown}
-          >
-            <PlayIcon className="size-4" />
-            Iniciar ciclo
-          </Button>
-        )}
-
-        {status === 'running' && (
-          <div className="flex gap-3">
-            <Button variant="soft" size="cycle" className="flex-1" onClick={pauseCountdown}>
-              <PauseIcon className="size-4" />
-              Pausar
-            </Button>
-            <Button variant="outline" size="cycle" className="flex-1" onClick={resetCountdown}>
-              <XIcon className="size-4" />
-              Abandonar
-            </Button>
-          </div>
-        )}
-
-        {status === 'paused' && (
-          <div className="flex gap-3">
-            <Button variant="soft" size="cycle" className="flex-1" onClick={resumeCountdown}>
+      {!showChallenge && (
+        <div
+          className={
+            isStage
+              ? 'flex w-full max-w-[520px] flex-col items-center'
+              : 'min-w-0 md:col-start-1 md:row-start-2'
+          }
+        >
+          {isIdle && (
+            <Button
+              variant="cta"
+              size="cycle"
+              className="w-full md:w-[220px]"
+              onClick={startCountdown}
+            >
               <PlayIcon className="size-4" />
-              Continuar
+              Iniciar ciclo
             </Button>
-            <Button variant="outline" size="cycle" className="flex-1" onClick={resetCountdown}>
-              <XIcon className="size-4" />
-              Abandonar
-            </Button>
-          </div>
-        )}
+          )}
 
-        {status === 'finished' &&
-          (showChallenge ? (
-            <p className="text-[15px] font-bold text-[var(--ink)]">
-              Ciclo concluído. Resolva o desafio para liberar o próximo.
-            </p>
-          ) : (
-            <div className="flex gap-3">
+          {status === 'running' && (
+            <div className="flex w-full gap-3">
+              <Button variant="soft" size="cycle" className="flex-1" onClick={pauseCountdown}>
+                <PauseIcon className="size-4" />
+                Pausar
+              </Button>
+              <Button variant="outline" size="cycle" className="flex-1" onClick={resetCountdown}>
+                <XIcon className="size-4" />
+                Abandonar
+              </Button>
+            </div>
+          )}
+
+          {status === 'paused' && (
+            <div className="flex w-full gap-3">
+              <Button variant="cta" size="cycle" className="flex-1" onClick={resumeCountdown}>
+                <PlayIcon className="size-4" />
+                Continuar
+              </Button>
+              <Button variant="outline" size="cycle" className="flex-1" onClick={resetCountdown}>
+                <XIcon className="size-4" />
+                Abandonar
+              </Button>
+            </div>
+          )}
+
+          {isBetweenCycles && (
+            <div className="flex gap-3 md:max-w-[460px]">
               <Button variant="cta" size="cycle" className="flex-1" onClick={startNewCycle}>
                 <PlayIcon className="size-4" />
                 Novo ciclo
@@ -211,31 +226,32 @@ export default function Countdown() {
                 Fazer pausa
               </Button>
             </div>
-          ))}
+          )}
 
-        {isOnBreak && (
-          <Button
-            variant="outline"
-            size="cycle"
-            className="w-full md:w-[220px]"
-            onClick={skipBreak}
-          >
-            Pular pausa
-          </Button>
-        )}
+          {isOnBreak && (
+            <Button
+              variant="outline"
+              size="cycle"
+              className="w-full md:w-[220px]"
+              onClick={skipBreak}
+            >
+              Pular pausa
+            </Button>
+          )}
 
-        {isCycleOpen && (
-          <div className="mt-4 w-full md:max-w-md">
-            <QuickCapture />
-          </div>
-        )}
+          {isCycleOpen && (
+            <div className="mt-4 w-full text-left">
+              <QuickCapture />
+            </div>
+          )}
 
-        {(isIdle || isCycleOpen) && (
-          <div className="mt-6">
-            <FocusReminder color={ambient ? `var(--pillar-${ambient}-ink)` : undefined} />
-          </div>
-        )}
-      </div>
+          {(isIdle || isCycleOpen) && (
+            <div className={`text-left ${isCycleOpen ? 'mt-3' : 'mt-6'}`}>
+              <FocusReminder color={ambient ? `var(--pillar-${ambient}-ink)` : undefined} />
+            </div>
+          )}
+        </div>
+      )}
 
       {isCycleTimeOpen && <CycleTimeModal onClose={() => setIsCycleTimeOpen(false)} />}
     </Card>

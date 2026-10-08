@@ -13,7 +13,7 @@ export default function FocusReminder({ color = 'var(--accent-ring-soft)' }: Foc
         <SproutIcon className="size-9" />
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-extrabold text-[var(--ink)]">Mantenha o foco</p>
+        <p className="text-sm font-bold text-[var(--ink)]">Mantenha o foco</p>
         <p className="text-xs text-[var(--ink-soft)]">Cada ciclo te aproxima dos seus objetivos.</p>
       </div>
     </div>

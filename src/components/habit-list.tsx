@@ -2,7 +2,6 @@
 
 import { type FormEvent, useState } from 'react'
 import Button from '@/src/components/ui/button'
-import Card from '@/src/components/ui/card'
 import CheckCircle from '@/src/components/ui/check-circle'
 import IconButton from '@/src/components/ui/icon-button'
 import { PlusIcon, XIcon } from '@/src/components/ui/icons'
@@ -42,7 +41,7 @@ function NewHabitForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form onSubmit={submit} className="flex h-[52px] items-center gap-2.5 px-[22px]">
+    <form onSubmit={submit} className="flex h-[52px] items-center gap-2.5">
       <TextField
         label="Novo hábito"
         placeholder="Novo hábito"
@@ -54,7 +53,7 @@ function NewHabitForm({ onDone }: { onDone: () => void }) {
       <button
         type="submit"
         disabled={!name.trim()}
-        className="text-xs font-extrabold text-[var(--accent)] disabled:opacity-40"
+        className="text-xs font-bold text-[var(--accent)] disabled:opacity-40"
       >
         Adicionar
       </button>
@@ -69,63 +68,62 @@ export default function HabitList() {
   const [isAdding, setIsAdding] = useState(false)
 
   return (
-    <section className="flex min-w-0 flex-col gap-3">
+    <section className="flex min-w-0 flex-col">
       <SectionHeading>Hábitos de hoje</SectionHeading>
 
-      <Card className="overflow-hidden py-2.5">
-        <ul>
-          {habits.map(habit => {
-            const done = isHabitDone(habit)
+      <ul className="mt-3 border-t border-[var(--row-line)]">
+        {habits.map(habit => {
+          const done = isHabitDone(habit)
 
-            return (
-              <li
-                key={habit.id}
-                className="flex h-[52px] items-center gap-3.5 border-b border-[var(--row-line)] px-[22px]"
+          return (
+            <li
+              key={habit.id}
+              className="flex min-h-[52px] items-center gap-3 border-b border-[var(--row-line)]"
+            >
+              <CheckCircle
+                checked={done}
+                label={`Marcar ${habit.name} como feito`}
+                onChange={() => toggleHabit(habit.id)}
+              />
+
+              <span
+                className={`min-w-0 flex-1 truncate text-[15px] font-semibold text-[var(--ink)] ${done ? 'line-through opacity-50' : ''}`}
               >
-                <CheckCircle
-                  checked={done}
-                  label={`Marcar ${habit.name} como feito`}
-                  onChange={() => toggleHabit(habit.id)}
-                />
+                {habit.name}
+              </span>
 
-                <span
-                  className={`min-w-0 flex-1 truncate text-[15px] font-semibold text-[var(--ink)] ${done ? 'line-through opacity-50' : ''}`}
-                >
-                  {habit.name}
-                </span>
+              <IconButton
+                label={`Remover ${habit.name}`}
+                tone="danger"
+                className="px-1"
+                onClick={() => removeHabit(habit.id)}
+              >
+                <XIcon className="size-4" />
+              </IconButton>
+            </li>
+          )
+        })}
+      </ul>
 
-                <IconButton
-                  label={`Remover ${habit.name}`}
-                  tone="danger"
-                  onClick={() => removeHabit(habit.id)}
-                >
-                  <XIcon className="size-4" />
-                </IconButton>
-              </li>
-            )
-          })}
-        </ul>
+      {ready && habits.length === 0 && !isAdding && (
+        <p className="pt-3.5 text-[13px] text-[var(--ink-muted)]">
+          Sem hábitos ainda. Comece com um pequeno.
+        </p>
+      )}
 
-        {ready && habits.length === 0 && !isAdding && (
-          <p className="px-[22px] pb-2 text-xs text-[var(--ink-muted)]">
-            Sem hábitos ainda. Comece com um pequeno.
-          </p>
-        )}
-
-        {isAdding ? (
-          <NewHabitForm onDone={() => setIsAdding(false)} />
-        ) : (
-          <Button
-            variant="ghost"
-            size="plain"
-            className="h-[52px] w-full justify-start px-[22px] text-sm font-bold"
-            onClick={() => setIsAdding(true)}
-          >
-            <PlusIcon className="size-4" />
-            Adicionar hábito
-          </Button>
-        )}
-      </Card>
+      {isAdding ? (
+        <NewHabitForm onDone={() => setIsAdding(false)} />
+      ) : (
+        <Button
+          variant="ghost"
+          size="plain"
+          className="-mx-2 h-11 w-[calc(100%+1rem)] justify-start rounded-[var(--radius-control)] px-2 text-sm font-bold"
+          onClick={() => setIsAdding(true)}
+        >
+          <PlusIcon className="size-4" />
+          Adicionar hábito
+        </Button>
+      )}
     </section>
   )
 }

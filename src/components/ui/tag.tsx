@@ -10,7 +10,7 @@ interface TagProps {
 }
 
 const sizes: Record<TagSize, string> = {
-  sm: 'rounded-[var(--radius-control)] px-2 py-[3px] text-[10px] font-extrabold',
+  sm: 'rounded-[var(--radius-control)] px-2 py-1 text-[11px] font-bold',
   md: 'rounded-[var(--radius-control)] px-3.5 py-[3px] text-xs font-bold'
 }
 

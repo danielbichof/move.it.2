@@ -13,10 +13,8 @@ export default async function Home() {
       <CountdownProvider>
         <TopHeader />
 
-        <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-4 pt-8 pb-16 md:px-8 md:pt-10">
-          <h1 className="text-[32px] leading-tight font-extrabold text-[var(--ink)]">
-            O que importa agora?
-          </h1>
+        <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 pt-8 pb-16 md:px-8 md:pt-10">
+          <h1 className="text-lg font-medium text-[var(--ink-soft)]">O que importa agora?</h1>
 
           <Countdown />
 

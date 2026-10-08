@@ -18,7 +18,7 @@ export default function TodayLists() {
   if (isInCycle) return null
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div className="mt-6 grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-3">
       <LaterList />
       <HabitList />
       <Inbox />

@@ -2,9 +2,7 @@
 
 import { type FormEvent, useState } from 'react'
 import PillarIcon from '@/src/components/pillar-icon'
-import PillarTag from '@/src/components/pillar-tag'
 import Button from '@/src/components/ui/button'
-import Card from '@/src/components/ui/card'
 import IconButton from '@/src/components/ui/icon-button'
 import { PlusIcon, XIcon } from '@/src/components/ui/icons'
 import SectionHeading from '@/src/components/ui/section-heading'
@@ -44,7 +42,7 @@ function NewItemForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3 px-[22px] py-4">
+    <form onSubmit={submit} className="flex flex-col gap-3 py-3">
       <TextField
         label="Novo item"
         placeholder="Novo item"
@@ -70,7 +68,7 @@ function NewItemForm({ onDone }: { onDone: () => void }) {
         <button
           type="submit"
           disabled={!title.trim()}
-          className="ml-auto text-xs font-extrabold text-[var(--accent)] disabled:opacity-40"
+          className="ml-auto text-xs font-bold text-[var(--accent)] disabled:opacity-40"
         >
           Adicionar
         </button>
@@ -88,86 +86,73 @@ export default function LaterList() {
   const pending = items.filter(item => item.id !== focusId)
 
   return (
-    <section className="flex min-w-0 flex-col gap-3">
+    <section className="flex min-w-0 flex-col">
       <SectionHeading>Depois</SectionHeading>
 
-      <Card className="overflow-hidden">
-        <ul>
-          {pending.map(item => (
-            <li
-              key={item.id}
-              className="group relative flex items-stretch border-b border-[var(--row-line)]"
-            >
-              <span
-                className="absolute top-0 bottom-0 left-0 z-[1] w-[3px]"
-                style={{ background: `var(--pillar-${item.pillar}-ink)` }}
-                aria-hidden="true"
-              />
-              <button
-                type="button"
-                className="flex min-w-0 flex-1 items-center gap-3.5 py-4 pr-2 pl-[22px] text-left transition-colors hover:bg-[var(--accent-faint)]"
-                aria-label={`Focar em ${item.title}`}
-                onClick={() => setFocus(item.id)}
-              >
-                <span
-                  className="flex size-[30px] shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    background: `var(--pillar-${item.pillar})`,
-                    color: `var(--pillar-${item.pillar}-ink)`
-                  }}
-                  aria-hidden="true"
-                >
-                  <PillarIcon pillar={item.pillar} className="size-[17px]" />
-                </span>
-
-                <span className="flex min-w-0 flex-1 flex-col items-start gap-1.5">
-                  <span className="line-clamp-2 text-sm font-extrabold break-words text-[var(--ink)]">
-                    {item.title}
-                  </span>
-                  <PillarTag pillar={item.pillar} />
-                </span>
-
-                <span
-                  className="shrink-0 text-xs font-extrabold text-[var(--accent)] sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
-                  aria-hidden="true"
-                >
-                  Focar
-                </span>
-              </button>
-
-              <div className="flex shrink-0 items-center pr-3 pl-1">
-                <IconButton
-                  label={`Remover ${item.title}`}
-                  tone="danger"
-                  onClick={() => removeItem(item.id)}
-                >
-                  <XIcon className="size-[16px]" />
-                </IconButton>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {ready && pending.length === 0 && !isAdding && (
-          <p className="px-[22px] pt-[18px] text-xs text-[var(--ink-muted)]">
-            Nada esperando. Adicione o que vem depois deste ciclo.
-          </p>
-        )}
-
-        {isAdding ? (
-          <NewItemForm onDone={() => setIsAdding(false)} />
-        ) : (
-          <Button
-            variant="ghost"
-            size="plain"
-            className="h-[52px] w-full justify-start px-[22px] text-sm font-bold"
-            onClick={() => setIsAdding(true)}
+      <ul className="mt-3 border-t border-[var(--row-line)]">
+        {pending.map(item => (
+          <li
+            key={item.id}
+            className="group flex items-stretch gap-1 border-b border-[var(--row-line)]"
           >
-            <PlusIcon className="size-4" />
-            Adicionar item
-          </Button>
-        )}
-      </Card>
+            <button
+              type="button"
+              className="-mx-2 flex min-w-0 flex-1 items-center gap-3 rounded-[var(--radius-control)] px-2 py-3.5 text-left transition-colors hover:bg-[var(--accent-faint)]"
+              aria-label={`Focar em ${item.title}`}
+              onClick={() => setFocus(item.id)}
+            >
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="line-clamp-2 text-[15px] font-semibold break-words text-[var(--ink)]">
+                  {item.title}
+                </span>
+                <span
+                  className="flex items-center gap-1.5 text-xs font-semibold"
+                  style={{ color: `var(--pillar-${item.pillar}-ink)` }}
+                >
+                  <PillarIcon pillar={item.pillar} className="size-3.5" />
+                  {pillars.find(option => option.id === item.pillar)?.name}
+                </span>
+              </span>
+
+              <span
+                className="shrink-0 text-xs font-bold text-[var(--accent)] sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
+                aria-hidden="true"
+              >
+                Focar
+              </span>
+            </button>
+
+            <IconButton
+              label={`Remover ${item.title}`}
+              tone="danger"
+              className="px-1"
+              onClick={() => removeItem(item.id)}
+            >
+              <XIcon className="size-4" />
+            </IconButton>
+          </li>
+        ))}
+      </ul>
+
+      {ready && pending.length === 0 && !isAdding && (
+        <p className="pt-3.5 text-[13px] text-[var(--ink-muted)]">
+          Nada esperando. Adicione o que vem depois deste ciclo.
+        </p>
+      )}
+
+      {isAdding ? (
+        <NewItemForm onDone={() => setIsAdding(false)} />
+      ) : (
+        <Button
+          variant="ghost"
+          size="plain"
+          className="-mx-2 h-11 w-[calc(100%+1rem)] justify-start rounded-[var(--radius-control)] px-2 text-sm font-bold"
+          onClick={() => setIsAdding(true)}
+        >
+          <PlusIcon className="size-4" />
+          Adicionar item
+        </Button>
+      )}
     </section>
   )
 }

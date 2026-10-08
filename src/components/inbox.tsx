@@ -1,12 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import QuickCapture from '@/src/components/quick-capture'
-import Button from '@/src/components/ui/button'
-import Card from '@/src/components/ui/card'
 import CountBadge from '@/src/components/ui/count-badge'
 import IconButton from '@/src/components/ui/icon-button'
-import { PlusIcon, XIcon } from '@/src/components/ui/icons'
+import { XIcon } from '@/src/components/ui/icons'
 import SectionHeading from '@/src/components/ui/section-heading'
 import Tag from '@/src/components/ui/tag'
 import { type Item, newId, pillars } from '@/src/lib/system-m'
@@ -37,49 +34,26 @@ function moveTo(id: string, pillar: Item['pillar']) {
 export default function Inbox() {
   const { inbox } = useSystemM()
   const ready = useSystemMReady()
-  const [isCapturing, setIsCapturing] = useState(false)
 
   return (
-    <section className="flex min-w-0 flex-col gap-3">
-      <div className="flex items-center gap-[9px]">
+    <section className="flex min-w-0 flex-col">
+      <div className="flex items-center gap-2">
         <SectionHeading>Inbox</SectionHeading>
         {inbox.length > 0 && <CountBadge count={inbox.length} />}
-        <Button
-          variant="quiet"
-          size="xs"
-          aria-expanded={isCapturing}
-          className="ml-auto"
-          onClick={() => setIsCapturing(open => !open)}
-        >
-          <PlusIcon className="size-[13px]" />
-          Nova anotação
-        </Button>
       </div>
 
-      <Card className="flex flex-col gap-4 px-[18px] py-4">
-        {isCapturing && <QuickCapture />}
-
-        {ready && inbox.length === 0 && !isCapturing && (
-          <p className="text-xs text-[var(--ink-muted)]">
-            Inbox vazia. Anote agora, decida depois onde colocar.
-          </p>
-        )}
-
-        {inbox.map((entry, index) => (
-          <div
+      <ul className="mt-3 border-t border-[var(--row-line)]">
+        {inbox.map(entry => (
+          <li
             key={entry.id}
-            className={`flex items-start gap-3 ${index > 0 ? 'border-t border-[var(--divider)] pt-4' : ''}`}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-2 border-b border-[var(--row-line)] py-3.5"
           >
-            <span
-              className="mt-0.5 size-[18px] shrink-0 rounded-full border-2 border-[var(--accent-ring-soft)]"
-              aria-hidden="true"
-            />
-
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="text-[13px] font-bold break-words text-[var(--ink)]">
+            {/* `contents`: o texto divide a linha com o X e as tags ganham a largura toda */}
+            <div className="contents">
+              <span className="text-[15px] font-semibold break-words text-[var(--ink)]">
                 {entry.text}
               </span>
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="col-span-2 row-start-2 flex flex-wrap items-center gap-1.5">
                 <span className="text-xs text-[var(--ink-muted)]">Mover para</span>
                 {pillars.map(pillar => (
                   <button
@@ -103,13 +77,24 @@ export default function Inbox() {
             <IconButton
               label={`Descartar ${entry.text}`}
               tone="danger"
+              className="px-1"
               onClick={() => discard(entry.id)}
             >
               <XIcon className="size-4" />
             </IconButton>
-          </div>
+          </li>
         ))}
-      </Card>
+      </ul>
+
+      {ready && inbox.length === 0 && (
+        <p className="pt-3.5 text-[13px] text-[var(--ink-muted)]">
+          Inbox vazia. Anote agora, decida depois onde colocar.
+        </p>
+      )}
+
+      <div className="mt-3.5">
+        <QuickCapture />
+      </div>
     </section>
   )
 }
