@@ -8,7 +8,7 @@ Organizar **de onde vem o foco** do ciclo, sem transformar o Move.it em um geren
 
 ## Base obrigatória
 
-Preservar integralmente: ciclo de 35 minutos, iniciar/abandonar, desafio ao fim do ciclo, Completei/Falhei, XP por desafio concluído (nunca por minuto, item ou pilar), levels, progresso e persistência em cookies.
+Preservar integralmente: ciclo de 35 minutos, iniciar/abandonar, desafio ao fim do ciclo, Completei/Falhei, XP por desafio concluído (nunca por minuto, item ou pilar), levels e progresso.
 
 ## Tela Hoje
 
@@ -34,9 +34,10 @@ Captura rápida: "isso surgiu, registro agora e decido depois onde colocar". Só
 
 ## Dados e persistência
 
-- Progresso (`level`, `currentExperience`, `challengesCompleted`): cookies e server actions existentes.
-- Sistema M: `localStorage`, chave `moveit:sistema-m-v2`, estrutura versionada (`version: 2`) em [src/lib/sistema-m.ts](../../src/lib/sistema-m.ts), com acesso por [src/lib/sistema-m-store.ts](../../src/lib/sistema-m-store.ts). Todo dado lido é validado; item inválido é descartado e estrutura inválida vira estado vazio.
-- O app começa vazio, sem exemplos. Nunca guardar senha, token ou dado sensível; o `localStorage` não duplica a fonte de verdade do XP.
+- Progresso e Sistema M ficam no Postgres, cada registro com dono (`userId`). Ver [04-persistencia.md](04-persistencia.md).
+- Tipos em [src/lib/system-m.ts](../../src/lib/system-m.ts); estado e mutações em [src/contexts/system-m-context.tsx](../../src/contexts/system-m-context.tsx), que atualiza a tela na hora e grava pelas server actions de [src/lib/system-m-actions.ts](../../src/lib/system-m-actions.ts).
+- O que um navegador ainda guardava no `localStorage` (chave `moveit:sistema-m-v2`) é importado para o banco na primeira visita e apagado depois.
+- O app começa vazio, sem exemplos.
 
 ## Fora do escopo
 

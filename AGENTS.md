@@ -9,6 +9,8 @@ Package manager is **pnpm** (`pnpm-lock.yaml` committed; do not use npm/yarn/bun
 - `pnpm dev` / `pnpm build` / `pnpm start`
 - `pnpm lint`, `pnpm lint:fix` (Biome: lint + format, config in `biome.json`)
 - Typecheck: no script — run `pnpm exec tsc --noEmit`
+- Local database: `pnpm db:up` / `pnpm db:down` (Postgres 17 in `docker-compose.yml`; wipe with `docker compose down -v`)
+- Database: `pnpm db:generate` (after editing `src/lib/db/schema.ts`) and `pnpm db:migrate` (Drizzle Kit; migrations committed in `drizzle/`)
 - **No tests exist** in this repo.
 
 ## Layout / architecture
@@ -17,8 +19,9 @@ Package manager is **pnpm** (`pnpm-lock.yaml` committed; do not use npm/yarn/bun
 - `src/components/ui/` — primitivas genéricas sem estado de domínio (Button, Card, Modal, Tag, …). Componentes de domínio ficam um nível acima e compõem essas primitivas; **nomes de arquivo em inglês**, textos de UI em pt-BR.
 - **Path alias**: `tsconfig.json` maps `@/*` → `./*` (repo root), so imports are `@/src/components/...`, never `@/components/...`.
 - UI strings and commit messages are in **pt-BR**.
-- Entry flow: `app/page.tsx` (server component) reads cookie progress via server action `getUserProgress`, then wraps `<ChallengesProvider>` > `<CountdownProvider>`.
-- **State**: two React contexts (`src/contexts/`). `ChallengesProvider` uses `useOptimistic` over server-loaded progress and calls server actions in `src/lib/cookies-actions.ts` (`'use server'`) that persist to cookies + `revalidatePath('/')`. There is no database: `.env`'s `DATABASE_URL` is unused, root `challenges.json` is dead data — the real challenge list is `src/lib/challenges-data.ts`.
+- Entry flow: `app/page.tsx` (server component, `force-dynamic`) checks `hasAccess()`, loads everything with `loadAppData()` (`src/lib/app-data.ts`), then wraps `<SystemMProvider>` > `<ChallengesProvider>` > `<CountdownProvider>`.
+- **Persistence**: Postgres via Drizzle (`src/lib/db/`, driver `node-postgres`, so the same code runs on the local Docker database and on Neon; multi-statement writes use `db().transaction`). `DATABASE_URL` and `APP_SECRET` live in `.env.local`, which overrides the leftover `.env`. Every table has `userId`; until login exists `src/lib/session.ts` returns one fixed user and gates access with the `APP_SECRET` password (open in dev when unset, closed in production).
+- **State**: three React contexts (`src/contexts/`). `SystemMProvider` and `ChallengesProvider` use `useOptimistic` over server-loaded data and call `'use server'` actions (`src/lib/system-m-actions.ts`, `src/lib/progress-actions.ts`) that write to the database + `revalidatePath('/')`. Root `challenges.json` is dead data — the real challenge list is `src/lib/challenges-data.ts`.
 
 ## Traps (don't get misled)
 
@@ -28,5 +31,16 @@ Package manager is **pnpm** (`pnpm-lock.yaml` committed; do not use npm/yarn/bun
 
 ## When editing
 
-- Server/client split matters: files in `src/contexts/` are `'use client'`; cookie mutations must go through the `'use server'` actions in `src/lib/cookies-actions.ts`.
+- Server/client split matters: files in `src/contexts/` are `'use client'`; every write goes through a `'use server'` action that starts with `requireUserId()`, validates its input and filters by `userId`.
+- `src/lib/db/schema.ts` is also read by Drizzle Kit outside Next: use relative imports there, not the `@/` alias.
 - Verify with `pnpm lint && pnpm exec tsc --noEmit` (and `pnpm build` for route-level changes).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
