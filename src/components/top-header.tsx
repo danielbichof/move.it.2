@@ -8,7 +8,7 @@ import Profile from '@/src/components/profile'
 import Avatar from '@/src/components/ui/avatar'
 import Card from '@/src/components/ui/card'
 import { BoltIcon, ChevronDownIcon } from '@/src/components/ui/icons'
-import { useSystemM } from '@/src/lib/system-m-store'
+import { useSystemM } from '@/src/contexts/system-m-context'
 
 export default function TopHeader() {
   const { userName } = useSystemM()

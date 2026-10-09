@@ -11,9 +11,9 @@ import {
 import { LevelUpModal } from '@/src/components/level-up-modal'
 import { type Challenge, challenges } from '@/src/lib/challenges-data'
 import {
-  completeChallenge as completeChallengeCookie,
+  completeChallenge as completeChallengeAction,
   type UserProgress
-} from '@/src/lib/cookies-actions'
+} from '@/src/lib/progress-actions'
 
 interface ChallengeContextData {
   // Server state
@@ -115,7 +115,7 @@ export function ChallengesProvider({ children, initialProgress }: ChallengesProv
 
     // Server action
     startTransition(async () => {
-      await completeChallengeCookie(amount)
+      await completeChallengeAction(amount)
     })
   }
 

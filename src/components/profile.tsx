@@ -2,17 +2,16 @@
 
 import Image from 'next/image'
 import Avatar from '@/src/components/ui/avatar'
-import { updateSystemM, useSystemM } from '@/src/lib/system-m-store'
+import { useSystemM, useSystemMActions } from '@/src/contexts/system-m-context'
 import { useChallengesContext } from '../contexts/challenges-context'
 
 export default function Profile() {
   const { level } = useChallengesContext()
   const { userName } = useSystemM()
+  const { setUserName } = useSystemMActions()
 
-  function setUserName(name: string) {
-    if (name !== userName) {
-      updateSystemM(state => ({ ...state, userName: name }))
-    }
+  function rename(name: string) {
+    if (name !== userName) setUserName(name)
   }
 
   return (
@@ -27,7 +26,7 @@ export default function Profile() {
           placeholder="Seu nome"
           aria-label="Seu nome"
           className="block w-36 max-w-full border-0 bg-transparent text-base font-semibold text-[var(--ink)] outline-none"
-          onBlur={e => setUserName(e.target.value.trim())}
+          onBlur={e => rename(e.target.value.trim())}
           onKeyDown={e => e.key === 'Enter' && e.currentTarget.blur()}
         />
         <p className="flex items-center text-xs">

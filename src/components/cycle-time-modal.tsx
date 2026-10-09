@@ -5,21 +5,22 @@ import Button from '@/src/components/ui/button'
 import { ChevronRightIcon, SproutIcon, TimerIcon } from '@/src/components/ui/icons'
 import Modal from '@/src/components/ui/modal'
 import ProgressRing from '@/src/components/ui/progress-ring'
+import { useSystemM, useSystemMActions } from '@/src/contexts/system-m-context'
 import {
   cyclePresets,
   cycleStepMinutes,
   maxCycleMinutes,
   minCycleMinutes
 } from '@/src/lib/system-m'
-import { updateSystemM, useSystemM } from '@/src/lib/system-m-store'
 
 export default function CycleTimeModal({ onClose }: { onClose: () => void }) {
   const { cycleMinutes } = useSystemM()
+  const { setCycleMinutes } = useSystemMActions()
   const [minutes, setMinutes] = useState(cycleMinutes)
   const [isCustomOpen, setIsCustomOpen] = useState(!cyclePresets.includes(cycleMinutes))
 
   function confirm() {
-    updateSystemM(state => ({ ...state, cycleMinutes: minutes }))
+    setCycleMinutes(minutes)
     onClose()
   }
 

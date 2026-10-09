@@ -20,13 +20,9 @@ import {
 } from '@/src/components/ui/icons'
 import ProgressBar from '@/src/components/ui/progress-bar'
 import { useChallengesContext } from '@/src/contexts/challenges-context'
+import { useSystemM, useSystemMActions } from '@/src/contexts/system-m-context'
 import { focusItem, pillars } from '@/src/lib/system-m'
-import { updateSystemM, useSystemM, useSystemMReady } from '@/src/lib/system-m-store'
 import { useCountdownContext } from '../contexts/countdown-context'
-
-function clearFocus() {
-  updateSystemM(state => ({ ...state, focusId: null }))
-}
 
 // Card principal da tela Hoje: o foco atual, o Timer e, ao fim do ciclo, o desafio
 export default function Countdown() {
@@ -48,7 +44,7 @@ export default function Countdown() {
 
   const { activeChallenge } = useChallengesContext()
   const focus = focusItem(useSystemM())
-  const ready = useSystemMReady()
+  const { setFocus } = useSystemMActions()
   const focusPillar = pillars.find(pillar => pillar.id === focus?.pillar)
   const [isCycleTimeOpen, setIsCycleTimeOpen] = useState(false)
 
@@ -98,7 +94,7 @@ export default function Countdown() {
               <PillarTag pillar={focus.pillar} size="md" onTint />
             </span>
             {isIdle && (
-              <IconButton label={`Tirar o foco de ${focus.title}`} onClick={clearFocus}>
+              <IconButton label={`Tirar o foco de ${focus.title}`} onClick={() => setFocus(null)}>
                 <EllipsisVerticalIcon className="size-[18px]" />
               </IconButton>
             )}
@@ -113,9 +109,7 @@ export default function Countdown() {
             ? 'Descanse um pouco. O próximo ciclo começa sozinho quando o tempo acabar.'
             : focus
               ? focusPillar?.description
-              : ready
-                ? 'Escolha um item em Depois para focar. O ciclo também roda sem foco.'
-                : ''}
+              : 'Escolha um item em Depois para focar. O ciclo também roda sem foco.'}
         </p>
       </div>
 

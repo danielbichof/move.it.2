@@ -3,13 +3,13 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/ui/button'
 import TextField from '@/src/components/ui/text-field'
-import { type InboxItem, newId } from '@/src/lib/system-m'
-import { updateSystemM } from '@/src/lib/system-m-store'
+import { useSystemMActions } from '@/src/contexts/system-m-context'
 
 const confirmationMs = 2000
 
 // Captura sem sair do foco: grava, limpa o campo, confirma em silêncio e mantém o cursor no input
 export default function QuickCapture() {
+  const { addInboxItem } = useSystemMActions()
   const [text, setText] = useState('')
   const [saved, setSaved] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -27,13 +27,7 @@ export default function QuickCapture() {
 
     if (!trimmed) return
 
-    const item: InboxItem = {
-      id: newId(),
-      text: trimmed,
-      createdAt: new Date().toISOString()
-    }
-
-    updateSystemM(state => ({ ...state, inbox: [...state.inbox, item] }))
+    addInboxItem(trimmed)
     setText('')
     setSaved(true)
 

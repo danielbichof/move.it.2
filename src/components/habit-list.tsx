@@ -7,23 +7,11 @@ import IconButton from '@/src/components/ui/icon-button'
 import { PlusIcon, XIcon } from '@/src/components/ui/icons'
 import SectionHeading from '@/src/components/ui/section-heading'
 import TextField from '@/src/components/ui/text-field'
-import { type Habit, isHabitDone, newId, today } from '@/src/lib/system-m'
-import { updateSystemM, useSystemM, useSystemMReady } from '@/src/lib/system-m-store'
-
-function toggleHabit(id: string) {
-  updateSystemM(state => ({
-    ...state,
-    habits: state.habits.map(habit =>
-      habit.id === id ? { ...habit, doneOn: isHabitDone(habit) ? null : today() } : habit
-    )
-  }))
-}
-
-function removeHabit(id: string) {
-  updateSystemM(state => ({ ...state, habits: state.habits.filter(habit => habit.id !== id) }))
-}
+import { useSystemM, useSystemMActions } from '@/src/contexts/system-m-context'
+import { isHabitDone } from '@/src/lib/system-m'
 
 function NewHabitForm({ onDone }: { onDone: () => void }) {
+  const { addHabit } = useSystemMActions()
   const [name, setName] = useState('')
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -33,9 +21,7 @@ function NewHabitForm({ onDone }: { onDone: () => void }) {
 
     if (!trimmed) return
 
-    const habit: Habit = { id: newId(), name: trimmed, doneOn: null }
-
-    updateSystemM(state => ({ ...state, habits: [...state.habits, habit] }))
+    addHabit(trimmed)
     setName('')
     onDone()
   }
@@ -64,7 +50,7 @@ function NewHabitForm({ onDone }: { onDone: () => void }) {
 // Os hábitos do dia: marcados zeram sozinhos quando a data vira
 export default function HabitList() {
   const { habits } = useSystemM()
-  const ready = useSystemMReady()
+  const { toggleHabit, removeHabit } = useSystemMActions()
   const [isAdding, setIsAdding] = useState(false)
 
   return (
@@ -83,7 +69,7 @@ export default function HabitList() {
               <CheckCircle
                 checked={done}
                 label={`Marcar ${habit.name} como feito`}
-                onChange={() => toggleHabit(habit.id)}
+                onChange={() => toggleHabit(habit)}
               />
 
               <span
@@ -105,7 +91,7 @@ export default function HabitList() {
         })}
       </ul>
 
-      {ready && habits.length === 0 && !isAdding && (
+      {habits.length === 0 && !isAdding && (
         <p className="pt-3.5 text-[13px] text-[var(--ink-muted)]">
           Sem hábitos ainda. Comece com um pequeno.
         </p>

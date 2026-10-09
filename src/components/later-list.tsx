@@ -8,22 +8,11 @@ import { PlusIcon, XIcon } from '@/src/components/ui/icons'
 import SectionHeading from '@/src/components/ui/section-heading'
 import Tag from '@/src/components/ui/tag'
 import TextField from '@/src/components/ui/text-field'
-import { type Item, newId, type Pillar, pillars } from '@/src/lib/system-m'
-import { updateSystemM, useSystemM, useSystemMReady } from '@/src/lib/system-m-store'
-
-function setFocus(id: string) {
-  updateSystemM(state => ({ ...state, focusId: id }))
-}
-
-function removeItem(id: string) {
-  updateSystemM(state => ({
-    ...state,
-    items: state.items.filter(item => item.id !== id),
-    focusId: state.focusId === id ? null : state.focusId
-  }))
-}
+import { useSystemM, useSystemMActions } from '@/src/contexts/system-m-context'
+import { type Pillar, pillars } from '@/src/lib/system-m'
 
 function NewItemForm({ onDone }: { onDone: () => void }) {
+  const { addItem } = useSystemMActions()
   const [title, setTitle] = useState('')
   const [pillar, setPillar] = useState<Pillar>('estabilidade')
 
@@ -34,9 +23,7 @@ function NewItemForm({ onDone }: { onDone: () => void }) {
 
     if (!trimmed) return
 
-    const item: Item = { id: newId(), pillar, title: trimmed, createdAt: new Date().toISOString() }
-
-    updateSystemM(state => ({ ...state, items: [...state.items, item] }))
+    addItem(trimmed, pillar)
     setTitle('')
     onDone()
   }
@@ -80,7 +67,7 @@ function NewItemForm({ onDone }: { onDone: () => void }) {
 // Tudo que não é o foco do momento fica aqui, pronto para virar o próximo ciclo
 export default function LaterList() {
   const { items, focusId } = useSystemM()
-  const ready = useSystemMReady()
+  const { setFocus, removeItem } = useSystemMActions()
   const [isAdding, setIsAdding] = useState(false)
 
   const pending = items.filter(item => item.id !== focusId)
@@ -134,7 +121,7 @@ export default function LaterList() {
         ))}
       </ul>
 
-      {ready && pending.length === 0 && !isAdding && (
+      {pending.length === 0 && !isAdding && (
         <p className="pt-3.5 text-[13px] text-[var(--ink-muted)]">
           Nada esperando. Adicione o que vem depois deste ciclo.
         </p>

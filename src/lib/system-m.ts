@@ -1,4 +1,4 @@
-// Sistema M: de onde vem o foco do ciclo. Não guarda XP, level nem desafios (isso fica nos cookies).
+// Sistema M: de onde vem o foco do ciclo. Gravado no Postgres junto com o progresso (ver src/lib/db).
 
 export type Pillar = 'estabilidade' | 'crescimento' | 'laboratorio'
 
@@ -90,7 +90,8 @@ export function isHabitDone(habit: Habit) {
   return habit.doneOn === today()
 }
 
-// Validação do que vem do localStorage: item inválido é descartado, estrutura inválida vira vazio
+// Validação do que vinha do localStorage, usada só na importação para o banco (`importLegacy`):
+// item inválido é descartado, estrutura inválida vira vazio
 
 type Raw = Record<string, unknown>
 

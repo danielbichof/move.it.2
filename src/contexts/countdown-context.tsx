@@ -9,8 +9,8 @@ import {
   useRef,
   useState
 } from 'react'
-import { useSystemM } from '@/src/lib/system-m-store'
 import { useChallengesContext } from './challenges-context'
+import { useSystemM } from './system-m-context'
 
 export type CountdownStatus = 'idle' | 'running' | 'paused' | 'finished' | 'break'
 
