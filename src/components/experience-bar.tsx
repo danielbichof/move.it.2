@@ -1,25 +1,31 @@
 'use client'
 
+import ProgressBar from '@/src/components/ui/progress-bar'
 import { useChallengesContext } from '../contexts/challenges-context'
 
-
-export default function ExperienceBar(){
-    const { currentExperience, experienceToNextLevel } = useChallengesContext()
-    
-    const percentToLevel = Math.round((currentExperience * 100)) / experienceToNextLevel;
-    
-    
-    return (
-        <header className="flex items-start w-full py-12 mb-8">
-            <span className="text-base">0 xp</span>
-            <div className="flex-1 h-1 rounded mx-6 relative bg-gray-400">
-                <div className="h-1 rounded transition-all duration-300" style={{width: `${percentToLevel}%`, backgroundColor: 'var(--green)'}} />
-                <span className="absolute top-3 text-sm font-medium transform -translate-x-1/2" style={{ left: `${percentToLevel}%`}}>
-                    {currentExperience} xp
-                </span>
-            </div>
-            <span className="text-base">{experienceToNextLevel} xp</span>
-        </header>
-    )
+interface ExperienceBarProps {
+  className?: string
 }
 
+// Level e xp sempre à vista: é o que o usuário ganha ao fechar cada ciclo
+export default function ExperienceBar({ className = '' }: ExperienceBarProps) {
+  const { level, currentExperience, experienceToNextLevel } = useChallengesContext()
+
+  return (
+    <div className={`flex items-center gap-3 ${className}`}>
+      <span className="font-rajdhani shrink-0 text-lg leading-none font-semibold text-[var(--ink)]">
+        Lv {level}
+      </span>
+      <ProgressBar
+        value={currentExperience}
+        max={experienceToNextLevel}
+        label="Experiência"
+        className="h-2 min-w-0 flex-1 md:max-w-[520px]"
+      />
+      <span className="shrink-0 text-xs font-bold text-[var(--header-xp-end)]">
+        {currentExperience}
+        <span className="hidden sm:inline"> / {experienceToNextLevel}</span> xp
+      </span>
+    </div>
+  )
+}

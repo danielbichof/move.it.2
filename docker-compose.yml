@@ -1,0 +1,21 @@
+# Postgres local para desenvolvimento. Subir: `pnpm db:up`; apagar os dados: `docker compose down -v`
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: moveit
+      POSTGRES_PASSWORD: moveit
+      POSTGRES_DB: moveit
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U moveit -d moveit']
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  db-data:

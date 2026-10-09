@@ -1,60 +1,153 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F2F3F5;
-  --foreground: #171717;
-  --white: #FFF;
-  --gray-line: #DCDDE0;
-  --text: #666666;
-  --text-highlight: #B3B9FF;
-  --title: #2E384D;
-  --red: #E83F5B;
-  --green: #4CD62B;
-  --blue: #5965E0;
-  --blue-dark: #4953B8;
-  --blue-twitter: #2AA9E0;
-  
+  --background: #f6f9fd;
+  --foreground: #173057;
+  --white: #fff;
+  --gray-line: #d7e2f1;
+  --text: #60759b;
+  --text-highlight: #b3b9ff;
+  --title: #173057;
+  --red: #e83f5b;
+  --green: #4dbd93;
+  --blue: #4f5fef;
+  --blue-dark: #4657e9;
+  --blue-twitter: #2aa9e0;
+
+  --surface: #ffffff;
+  --surface-line: #d7e2f1;
+  --row-line: #dce6f4;
+  --ink: #173057;
+  --ink-soft: #48628a;
+  --ink-muted: #60759b;
+  --accent: #4f5fef;
+  --accent-ink: #5364f0;
+  --accent-soft: #eef2ff;
+  --accent-faint: #f1f4ff;
+  --accent-wash: #eef4ff;
+  --cta: #173057;
+  --gain: #1d8560;
+  --pause-ink: #2d4581;
+  --accent-ring: #7390f8;
+  --accent-ring-soft: #9aaef9;
+  --divider: #ecf1f8;
+
+  --pillar-estabilidade: #eef2ff;
+  --pillar-crescimento: #e5f8f0;
+  --pillar-laboratorio: #f1ebfb;
+  --pillar-estabilidade-ink: #4a5be0;
+  --pillar-crescimento-ink: #1e8660;
+  --pillar-laboratorio-ink: #7a5bc4;
+
   --font-inter: var(--font-inter);
   --font-rajdhani: var(--font-rajdhani);
+
+  --header-bg: #fbfcfe;
+  --header-line: #dce6f4;
+  --header-brand: #4f63f2;
+  --header-title: #19325b;
+  --header-xp-start: #4f5fef;
+  --header-xp-track: #c8d5ea;
+  --header-xp-fill: var(--gain);
+  --header-xp-end: #4d6590;
+  --header-icon: #526a91;
+  --avatar-fill: linear-gradient(135deg, #fdba74, #111827);
+
+  --radius-card: 8px;
+  --radius-control: 6px;
 }
 
-@media(max-width: 1080px){
-  html{
-    font-size: 93.75%;
+@layer base {
+  @media (max-width: 1080px) {
+    html {
+      font-size: 93.75%;
+    }
+  }
+
+  @media (max-width: 720px) {
+    html {
+      font-size: 87.5%;
+    }
+  }
+
+  body {
+    background: var(--background);
+    color: var(--text);
+  }
+
+  body,
+  input,
+  textarea,
+  button {
+    font-family: var(--font-inter), "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
-@media(max-width: 720px){
-  html{
-    font-size: 87.5%;
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--surface-line);
+    border-radius: var(--radius-card);
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--surface-line);
+    border-radius: var(--radius-card);
+    box-shadow: 0 10px 24px #8da5c31a;
+  }
+
+  .abandon-button {
+    background: var(--surface);
+    border: 1px solid var(--surface-line);
+    color: var(--ink);
+  }
+
+  .abandon-button:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--white);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--text);
+@keyframes clock-colon {
+  50% {
+    opacity: 0.25;
+  }
 }
 
-body, input, textarea, button {
-  font-family: var(--font-inter), "Inter", sans-serif;
-  font-weight: 400;
-  font-size: 1rem;
-}
+@layer utilities {
+  .clock-ticking {
+    animation: clock-colon 2s steps(1, end) infinite;
+  }
 
-.font-inter {
-  font-family: var(--font-inter), "Inter", sans-serif;
-}
+  @media (prefers-reduced-motion: reduce) {
+    .clock-ticking {
+      animation: none;
+    }
+  }
 
-.font-rajdhani {
-  font-family: var(--font-rajdhani), "Rajdhani", sans-serif;
-}
+  .font-inter {
+    font-family: var(--font-inter), "Inter", sans-serif;
+  }
 
-button {
-  cursor: pointer;
+  .font-rajdhani {
+    font-family: var(--font-rajdhani), "Rajdhani", sans-serif;
+  }
 }
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
